@@ -1,0 +1,16 @@
+version: '3'
+services:
+  hazelcast:
+    image: hazelcast/hazelcast:4.2.1
+    ports:
+      - 5701:5701
+    environment:
+      HZ_NETWORK_JOIN: "hazelcast-cluster"
+      HZ_CLUSTER_NAME: "hazelcast-cluster"
+      HZ_NODE_NAME: "hazelcast-node"
+  hazelcast-cluster:
+    image: hazelcast/hazelcast:4.2.1
+    environment:
+      HZ_CLUSTER_NAME: hazelcast-cluster
+      HZ_NODE_NAME: "hazelcast-cluster-node-1"
+    command: ["bash", "-c", "sleep 15; /opt/hazelcast/bin/start.sh"]
