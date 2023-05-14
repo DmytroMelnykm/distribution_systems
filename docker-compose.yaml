@@ -1,16 +1,50 @@
-version: '3'
+version: "3"
+
 services:
-  hazelcast:
-    image: hazelcast/hazelcast:4.2.1
+  hazelcast-node-1:
+    image: hazelcast/hazelcast:latest
+    environment:
+      HZ_NETWORK_JOIN: hazelcast-node-2,hazelcast-node-3
+      JAVA_OPTS: -Dhazelcast.config=/opt/hazelcast/config/hazelcast.xml
+    volumes:
+      - "./hazeclast.xml:/opt/hazelcast/config/hazelcast.xml"
     ports:
-      - 5701:5701
+      - "5701:5701"
+    networks:
+      - hazelcast-lecture
+
+  hazelcast-node-2:
+    image: hazelcast/hazelcast:latest
     environment:
-      HZ_NETWORK_JOIN: "hazelcast-cluster"
-      HZ_CLUSTER_NAME: "hazelcast-cluster"
-      HZ_NODE_NAME: "hazelcast-node"
-  hazelcast-cluster:
-    image: hazelcast/hazelcast:4.2.1
+      HZ_NETWORK_JOIN: hazelcast-node-1,hazelcast-node-3
+      JAVA_OPTS: -Dhazelcast.config=/opt/hazelcast/config/hazelcast.xml
+    volumes:
+      - "./hazeclast.xml:/opt/hazelcast/config/hazelcast.xml"
+    ports:
+      - "5702:5701"
+    networks:
+      - hazelcast-lecture
+
+  hazelcast-node-3:
+    image: hazelcast/hazelcast:latest
     environment:
-      HZ_CLUSTER_NAME: hazelcast-cluster
-      HZ_NODE_NAME: "hazelcast-cluster-node-1"
-    command: ["bash", "-c", "sleep 15; /opt/hazelcast/bin/start.sh"]
+      HZ_NETWORK_JOIN: hazelcast-node-1,hazelcast-node-2
+      JAVA_OPTS: -Dhazelcast.config=/opt/hazelcast/config/hazelcast.xml
+    volumes:
+      - "./hazeclast.xml:/opt/hazelcast/config/hazelcast.xml"
+    ports:
+      - "5703:5701"
+    networks:
+      - hazelcast-lecture
+
+  hazelcast-management-center:
+    image: hazelcast/management-center:latest
+    environment:
+      - HZ_MAN_CENTER_CLUSTER_MEMBERS=hazelcast-node-1:5701,hazelcast-node-2:5701,hazelcast-node-3:5701
+    ports:
+      - "8080:8080"
+    networks:
+      - hazelcast-lecture
+
+networks:
+  hazelcast-lecture:
