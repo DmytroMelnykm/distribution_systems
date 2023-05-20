@@ -34,3 +34,4 @@ async def save_message(data: GetMessageFromFacade):
         #print(f"key = {key}, value = {value}")
     
     return {"Response": data.message}
+
