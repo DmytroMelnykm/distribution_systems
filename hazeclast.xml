@@ -6,7 +6,7 @@
   <map name="*">
     <backup-count>1</backup-count>
   </map> 
-  <queue name="my_queue_first">
+  <queue name="massange_qu">
     <max-size>40</max-size>
   </queue>
   <topic name="my_topic"></topic>
