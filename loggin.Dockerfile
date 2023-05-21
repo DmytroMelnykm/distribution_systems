@@ -9,6 +9,7 @@ RUN apk update && apk add gcc python3-dev musl-dev
 
 WORKDIR /lab_1/loggin
 COPY /lab_1/loggin /lab_1/loggin/
+COPY requirments-fast-api.txt /lab_1/loggin/
 
 RUN python -m venv venv
 ENV PATH venv/bin:$PATH

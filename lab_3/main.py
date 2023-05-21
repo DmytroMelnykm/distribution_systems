@@ -10,16 +10,15 @@ async def get_massage_from_service(url: str, method: str, json: dict = None) -> 
         
 
 async def send_message():
-    all_massege = [f"messgae num {number}" for number in range(15)]
+    for number in range(15):
     
-    lis_courutines = [get_massage_from_service(
-            url="http://0.0.0.0:8015",
-            method="POST",
-            json={
-                "message": massage
-            }
-        ) for massage in all_massege]
-    await asyncio.gather(*lis_courutines)
+        await get_massage_from_service(
+                url="http://0.0.0.0:8015",
+                method="POST",
+                json={
+                    "message": f"messgae num {number}"
+                }
+            )
 
 
 async def get_all_massage(): 

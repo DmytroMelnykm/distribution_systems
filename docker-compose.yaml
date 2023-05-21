@@ -95,10 +95,11 @@ services:
     restart: unless-stopped
     environment:
       PORT_SEVICE: ${PORT_FACADE_MACHINE}
-      PORT_MESSAGE: ${PORT_MESSAGE_MACHINE}
       PORT_LOGGER_1: ${PORT_LOGGIN_MACHINE_1}
       PORT_LOGGER_2: ${PORT_LOGGIN_MACHINE_2}
       PORT_LOGGER_3: ${PORT_LOGGIN_MACHINE_3}
+      PORT_MESSAGE_1: ${PORT_MESSAGE_MACHINE_1}
+      PORT_MESSAGE_2: ${PORT_MESSAGE_MACHINE_2}
     ports:
       - "${PORT_FACADE_MACHINE}:${PORT_FACADE_MACHINE}"
     networks:
@@ -108,15 +109,27 @@ services:
       - hazelcast-node-2
       - hazelcast-node-3
 
-  api-message:
+  api-message-1:
     build: 
       context: .
       dockerfile: message.Dockerfile
     restart: unless-stopped
     environment:
-      PORT_SEVICE: ${PORT_MESSAGE_MACHINE}
+      PORT_SEVICE: ${PORT_MESSAGE_MACHINE_1}
     ports:
-      - "${PORT_MESSAGE_MACHINE}:${PORT_MESSAGE_MACHINE}"
+      - "${PORT_MESSAGE_MACHINE_1}:${PORT_MESSAGE_MACHINE_1}"
+    networks:
+      - hazelcast-lecture
+
+  api-message-2:
+    build: 
+      context: .
+      dockerfile: message.Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT_SEVICE: ${PORT_MESSAGE_MACHINE_2}
+    ports:
+      - "${PORT_MESSAGE_MACHINE_2}:${PORT_MESSAGE_MACHINE_2}"
     networks:
       - hazelcast-lecture
     depends_on:
