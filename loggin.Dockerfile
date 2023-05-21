@@ -16,6 +16,6 @@ ENV PATH venv/bin:$PATH
 RUN pip install --upgrade pip
 RUN pip install -r requirments-fast-api.txt
 
-COPY mock_libary.py /lab_1/loggin/venv/lib/python3.11/site-packages/hazelcast/__init__.py
+COPY __init__.py /lab_1/loggin/venv/lib/python3.11/site-packages/hazelcast/__init__.py
 
 ENTRYPOINT ["./entrypoint.sh"]
