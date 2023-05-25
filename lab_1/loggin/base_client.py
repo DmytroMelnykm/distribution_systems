@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 from uuid import uuid4
 
 
-
 @dataclass
 class ClientOperator:
     list_nodes: list
@@ -18,7 +17,7 @@ class ClientOperator:
             )
     
     def __enter__(self):
-        map_dist = self.client.get_map(self.name_map).blocking()
+        map_dist = self.client.get_map(self.name_map)
         return map_dist
             
     
