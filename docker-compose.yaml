@@ -51,6 +51,10 @@ services:
       - "${PORT_LOGGIN_MACHINE_1}:${PORT_LOGGIN_MACHINE_1}"
     networks:
       - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
 
   api-loggin-2:
     build: 
@@ -63,6 +67,10 @@ services:
       - "${PORT_LOGGIN_MACHINE_2}:${PORT_LOGGIN_MACHINE_2}"
     networks:
       - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
 
   api-loggin-3:
     build: 
@@ -75,6 +83,10 @@ services:
       - "${PORT_LOGGIN_MACHINE_3}:${PORT_LOGGIN_MACHINE_3}"
     networks:
       - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
 
   api-facade:
     build: 
@@ -91,6 +103,10 @@ services:
       - "${PORT_FACADE_MACHINE}:${PORT_FACADE_MACHINE}"
     networks:
       - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
 
   api-message:
     build: 
@@ -103,6 +119,10 @@ services:
       - "${PORT_MESSAGE_MACHINE}:${PORT_MESSAGE_MACHINE}"
     networks:
       - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
 
   hazelcast-management-center:
     image: hazelcast/management-center:latest
@@ -113,6 +133,10 @@ services:
       - "8080:8080"
     networks:
       - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
 
 networks:
   hazelcast-lecture:

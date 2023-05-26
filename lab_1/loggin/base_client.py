@@ -1,41 +1,43 @@
 from hazelcast import HazelcastClient
 from dataclasses import dataclass, field
-from uuid import uuid4
-
+from singltone import Singltone
 
 
 @dataclass
-class ClientOperator:
+class ClientOperator(metaclass=Singltone):
     list_nodes: list
     cluster_name: str
     name_map: str = field(default="")
     name_quiene: str = field(default="")
     
     def __post_init__(self):
-        self.client = HazelcastClient(
+        self._client = HazelcastClient(
             cluster_name=self.cluster_name, 
             cluster_members=self.list_nodes
             )
     
-    def __enter__(self):
-        map_dist = self.client.get_map(self.name_map).blocking()
-        return map_dist
-            
-    
-    def __exit__(self, type, value, traceback):
-        self.client.shutdown()
 
-    @staticmethod
-    def send_data(map_dist, unique_id: str, massange: str) -> str:
-        map_dist.set(unique_id, massange)
-        return map_dist.get(unique_id)
+class MapHz(ClientOperator):
+    
+    def __post_init__(self):
+        super().__post_init__()
+        self._map_dist = self._client.get_map(self.name_map)
+        
+    @property
+    def map_hz(self):
+        return self._map_dist
+    
+    def send_data(self, unique_id: str, massange: str) -> str:
+        self.map_hz.set(unique_id, massange).result()
+        return self.map_hz.get(unique_id).result()
     
 
-class WithQuiene(ClientOperator):
+class QuieneHz(ClientOperator):
     
-    def __enter__(self):
-        return self.client.get_queue(self.name_quiene).blocking()
-            
-    
-    def __exit__(self, type, value, traceback):
-        self.client.shutdown()
+    def __post_init__(self):
+        super().__post_init__()
+        self._quiene_hz = self._client.get_queue(self.name_quiene)
+        
+    @property
+    def quiene_hz(self):
+        return self.quiene_hz
