@@ -120,6 +120,10 @@ services:
       - "${PORT_MESSAGE_MACHINE_1}:${PORT_MESSAGE_MACHINE_1}"
     networks:
       - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
 
   api-message-2:
     build: 
