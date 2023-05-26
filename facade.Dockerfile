@@ -10,6 +10,7 @@ RUN apk update && apk add gcc python3-dev musl-dev
 WORKDIR /lab_1/facade
 COPY /lab_1/facade /lab_1/facade/
 COPY requirments-fast-api.txt /lab_1/facade/
+COPY /lab_1/common_utils /lab_1/facade/
 
 RUN python -m venv venv
 ENV PATH venv/bin:$PATH
