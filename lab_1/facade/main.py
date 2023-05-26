@@ -35,6 +35,7 @@ async def save_message(data: GetMessage):
     cluster_name="dev",
     name_map="hash_map"
     )
+    quiene_hz = QuieneHz().quiene_hz
     logger_service, _ = await FabricService.get_each_serivce()
     
     await logger_service.get_massage_from_service(
@@ -45,6 +46,6 @@ async def save_message(data: GetMessage):
         }
     )
     
-    QuieneHz().quiene_hz.put(data.message).result()
+    quiene_hz.put(data.message).result()
         
     return {"Response": data.message}
