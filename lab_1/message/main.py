@@ -6,28 +6,19 @@ from singltone import ListMessages
 
 
 app = FastAPI()
-
-
-async def get_and_check_element(queue: BlockingQueue):
-    if (element := queue.poll()) is None:
-        return await sleep(2)
-    
-    ListMessages().messages.append(element)
-    await sleep(2)
+QuieneHz(list_nodes=[
+        "hazelcast-node-1:5701", 
+        "hazelcast-node-2:5701", 
+        "hazelcast-node-3:5701"
+        ], 
+    cluster_name="dev",
+    name_quiene="massange_qu"
+    )
 
 
 async def check_massage():
-    QuieneHz(list_nodes=[
-            "hazelcast-node-1:5701", 
-            "hazelcast-node-2:5701", 
-            "hazelcast-node-3:5701"
-            ], 
-        cluster_name="dev",
-        name_quiene="massange_qu"
-        )
-    QUIENE_HZ = QuieneHz().quiene_hz
     while True:
-        await get_and_check_element(QUIENE_HZ)
+        await QuieneHz().get_and_check_element()
                 
 
 @app.on_event("startup")
