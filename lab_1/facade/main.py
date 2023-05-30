@@ -1,11 +1,22 @@
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 from modal_body import GetMessage
 import uuid
 from ports_logger import FabricService
-from base_client import WithQuiene
+from base_client import QuieneHz
 
 
 app = FastAPI()
+
+
+QuieneHz(
+    list_nodes=[
+        "hazelcast-node-1:5701", 
+        "hazelcast-node-2:5701", 
+        "hazelcast-node-3:5701"
+        ], 
+    cluster_name="dev",
+    name_quiene="massange_qu"
+)
 
 
 @app.get("/")
@@ -27,8 +38,8 @@ async def plus_strings():
 
 @app.post("/")
 async def save_message(data: GetMessage):
-    logger_service, _ = await FabricService.get_each_serivce()
     
+    logger_service, _ = await FabricService.get_each_serivce()
     await logger_service.get_massage_from_service(
         method="POST",
         json={
@@ -36,16 +47,8 @@ async def save_message(data: GetMessage):
            "uuid": str(uuid.uuid4())
         }
     )
-    
-    with WithQuiene(**{
-        "list_nodes":[
-            "hazelcast-node-1:5701", 
-            "hazelcast-node-2:5701", 
-            "hazelcast-node-3:5701"
-            ], 
-        "cluster_name":"dev",
-        "name_quiene": "massange_qu"
-    }) as queue_dist:
-        queue_dist.put(data.message)
-        
+    await QuieneHz().send_data(data.message)
     return {"Response": data.message}
+
+
+
