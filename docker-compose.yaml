@@ -127,12 +127,12 @@ services:
     networks:
       - hazelcast-lecture
 
-  # consul-service:
-  #   image: consul
-  #   ports:
-  #    - "8500:8500"
-  #   networks:
-  #     - hazelcast-lecture
+  consul-service:
+    image: consul
+    ports:
+     - "8500:8500"
+    networks:
+      - hazelcast-lecture
 
 networks:
   hazelcast-lecture:
