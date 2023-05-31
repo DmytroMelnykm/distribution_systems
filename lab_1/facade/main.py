@@ -26,16 +26,12 @@ async def register_service():
         check=check,
         timeout="30s"
     )
+    await QuieneHz(
+        cluster_name="dev",
+        name_quiene="massange_qu"
+        ).get_client()
 
-QuieneHz(
-    list_nodes=[
-        "hazelcast-node-1:5701", 
-        "hazelcast-node-2:5701", 
-        "hazelcast-node-3:5701"
-        ], 
-    cluster_name="dev",
-    name_quiene="massange_qu"
-)
+
 
 
 @app.get("/")

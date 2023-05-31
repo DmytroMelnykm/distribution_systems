@@ -3,26 +3,51 @@ from dataclasses import dataclass, field
 from singltone import Singltone, ListMessages
 from hazelcast.proxy.queue import Queue
 from asyncio import sleep
+from aiohttp import ClientSession
+from typing import ClassVar
 
 
 @dataclass
 class ClientOperator(metaclass=Singltone):
-    list_nodes: list
     cluster_name: str
     name_map: str = field(default="")
     name_quiene: str = field(default="")
+    service_counsul: ClassVar[str] = "http://consul-service:8500"
     
-    def __post_init__(self):
+    
+    async def get_client(self):
+        list_nodes = await self.get_adress_nodes()
         self._client = HazelcastClient(
             cluster_name=self.cluster_name, 
-            cluster_members=self.list_nodes
+            cluster_members=list_nodes
             )
+    
+    async def get_adress_nodes(self):
+        list_nodes = []
+        for number_serv in range(3):
+            info_service = await self.__get_service_name(
+                url="/v1/catalog/service/{service_name}".format(
+                    consul=self.service_counsul,
+                    service_name= "hazelcast-node-{}".format(number_serv + 1)
+            ))
+            info_service = info_service[0]
+            list_nodes.append("{addres}:{ports}".format(
+                addres=info_service["ServiceName"],
+                ports=info_service["ServicePort"]
+                )) 
+        return list_nodes
+    
+    async def __get_service_name(self, method: str = "GET", url: str = "/", json: dict = None) -> dict:
+        async with ClientSession("http://consul-service:8500") as session:
+            async with session.request(url=url, method=method, json=json) as response:
+                response.raise_for_status()
+                return await response.json()
     
 
 class MapHz(ClientOperator):
     
-    def __post_init__(self):
-        super().__post_init__()
+    async def get_client(self):
+        await super().get_client()
         self._map_dist = self._client.get_map(self.name_map)
         
     @property
@@ -36,8 +61,8 @@ class MapHz(ClientOperator):
 
 class QuieneHz(ClientOperator):
     
-    def __post_init__(self):
-        super().__post_init__()
+    async def get_client(self):
+        await super().get_client()
         self._quiene_hz_create = self._client.get_queue(self.name_quiene)
         
     @property

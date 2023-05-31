@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
-SERVICE_NAME=$PORT_SERVICE
-SERVICE_ADDRESS="localhost"
+SERVICE_NAME=$PROXY_SERVICE
+SERVICE_ADDRESS=$PROXY_SERVICE
 SERVICE_PORT=$PORT_SERVICE
 
 SERVICE_DATA='{
@@ -11,3 +11,5 @@ SERVICE_DATA='{
 }'
 
 curl -X PUT -d "$SERVICE_DATA" http://consul-service:8500/v1/agent/service/register
+
+hz start

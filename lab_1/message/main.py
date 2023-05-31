@@ -7,14 +7,6 @@ from os import environ
 
 
 app = FastAPI()
-QuieneHz(list_nodes=[
-        "hazelcast-node-1:5701", 
-        "hazelcast-node-2:5701", 
-        "hazelcast-node-3:5701"
-        ], 
-    cluster_name="dev",
-    name_quiene="massange_qu"
-    )
 
 
 async def check_massage():
@@ -39,6 +31,10 @@ async def startup_event():
         check=check,
         timeout="30s"
     )
+    await QuieneHz( 
+        cluster_name="dev",
+        name_quiene="massange_qu"
+    ).get_client()
     ListMessages()
     task = create_task(check_massage()) 
 

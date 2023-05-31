@@ -6,10 +6,9 @@ services:
       context: .
       dockerfile: hz.Dockerfile
     restart: unless-stopped
-    command: "./register_node.sh && hz start"
     environment:
       HZ_NETWORK_JOIN: hazelcast-node-2,hazelcast-node-3
-      JAVA_OPTS: ${JAVA_OPTS}
+      JAVA_OPTS: -Dhazelcast.config=/opt/hazelcast/config/hazelcast.xml
       PROXY_SERVICE: ${PROXY_NODE_1}
       PORT_SERVICE: ${PORT_NODE_HZ_1}
     volumes:
@@ -31,7 +30,7 @@ services:
       HZ_NETWORK_JOIN: hazelcast-node-1,hazelcast-node-3
       JAVA_OPTS: -Dhazelcast.config=/opt/hazelcast/config/hazelcast.xml
       PROXY_SERVICE: ${PROXY_NODE_2}
-      PORT_SERVICE: ${PORT_NODE_HZ_1}
+      PORT_SERVICE: ${PORT_NODE_HZ_2}
     volumes:
       - "./hazeclast.xml:/opt/hazelcast/config/hazelcast.xml"
       - "./register_node.sh:/opt/hazelcast/register_node.sh"

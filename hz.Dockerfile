@@ -1,8 +1,9 @@
 # syntax=docker/dockerfile:1
 
 # pull official base image
-FROM python:3.11.1-alpine
+FROM hazelcast/hazelcast:latest
 
-ENTRYPOINT ["./opt/hazelcast/register_node.sh"]
+WORKDIR /opt/hazelcast/
+COPY register_node.sh /opt/hazelcast/
 
-CMD ["hz start"]
+ENTRYPOINT ["./register_node.sh"]

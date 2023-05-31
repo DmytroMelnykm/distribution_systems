@@ -24,17 +24,13 @@ async def register_service():
         check=check,
         timeout="30s"
     )
+    await MapHz( 
+        cluster_name="dev",
+        name_map="hash_map"
+        ).get_client()
 
 
-MapHz(
-    list_nodes=[
-        "hazelcast-node-1:5701", 
-        "hazelcast-node-2:5701", 
-        "hazelcast-node-3:5701"
-        ], 
-    cluster_name="dev",
-    name_map="hash_map"
-    )
+
 
 
 @app.get("/check/counsul/")
