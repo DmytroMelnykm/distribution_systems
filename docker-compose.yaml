@@ -1,0 +1,203 @@
+version: "3"
+
+services:
+  hazelcast-node-1:
+    build:
+      context: .
+      dockerfile: hz.Dockerfile
+    restart: unless-stopped
+    environment:
+      HZ_NETWORK_JOIN: hazelcast-node-2,hazelcast-node-3
+      JAVA_OPTS: -Dhazelcast.config=/opt/hazelcast/config/hazelcast.xml
+      PROXY_SERVICE: ${PROXY_NODE_1}
+      PORT_SERVICE: ${PORT_NODE_HZ_1}
+    volumes:
+      - "./hazeclast.xml:/opt/hazelcast/config/hazelcast.xml"
+      - "./register_node.sh:/opt/hazelcast/register_node.sh"
+    ports:
+      - "${PORT_NODE_HZ_1}:5701"
+    networks:
+      - hazelcast-lecture
+    depends_on:
+      - consul-service
+
+  hazelcast-node-2:
+    build:
+      context: .
+      dockerfile: hz.Dockerfile
+    restart: unless-stopped
+    environment:
+      HZ_NETWORK_JOIN: hazelcast-node-1,hazelcast-node-3
+      JAVA_OPTS: -Dhazelcast.config=/opt/hazelcast/config/hazelcast.xml
+      PROXY_SERVICE: ${PROXY_NODE_2}
+      PORT_SERVICE: ${PORT_NODE_HZ_2}
+    volumes:
+      - "./hazeclast.xml:/opt/hazelcast/config/hazelcast.xml"
+      - "./register_node.sh:/opt/hazelcast/register_node.sh"
+    ports:
+      - "${PORT_NODE_HZ_2}:5701"
+    networks:
+      - hazelcast-lecture
+    depends_on:
+      - consul-service
+
+  hazelcast-node-3:
+    build:
+      context: .
+      dockerfile: hz.Dockerfile
+    restart: unless-stopped
+    command: "./register_node.sh && hz start"
+    environment:
+      HZ_NETWORK_JOIN: hazelcast-node-1,hazelcast-node-2
+      JAVA_OPTS: -Dhazelcast.config=/opt/hazelcast/config/hazelcast.xml
+      PROXY_SERVICE: ${PROXY_NODE_3}
+      PORT_SERVICE: ${PORT_NODE_HZ_1}
+    volumes:
+      - "./hazeclast.xml:/opt/hazelcast/config/hazelcast.xml"
+      - "./register_node.sh:/opt/hazelcast/register_node.sh"
+    ports:
+      - "${PORT_NODE_HZ_3}:5701"
+    networks:
+      - hazelcast-lecture
+    depends_on:
+      - consul-service
+
+  api-loggin-1:
+    build:
+      context: .
+      dockerfile: loggin.Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT_SEVICE: ${PORT_LOGGIN_MACHINE_1}
+      PROXY_SERVICE: ${PROXY_LOGGER_1}
+      PORT_CONSUL: ${PORT_CONSUL}
+    ports:
+      - "${PORT_LOGGIN_MACHINE_1}:${PORT_LOGGIN_MACHINE_1}"
+    networks:
+      - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
+      - consul-service
+
+  api-loggin-2:
+    build:
+      context: .
+      dockerfile: loggin.Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT_SEVICE: ${PORT_LOGGIN_MACHINE_2}
+      PROXY_SERVICE: ${PROXY_LOGGER_2}
+      PORT_CONSUL: ${PORT_CONSUL}
+    ports:
+      - "${PORT_LOGGIN_MACHINE_2}:${PORT_LOGGIN_MACHINE_2}"
+    networks:
+      - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
+      - consul-service
+
+  api-loggin-3:
+    build:
+      context: .
+      dockerfile: loggin.Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT_SEVICE: ${PORT_LOGGIN_MACHINE_3}
+      PROXY_SERVICE: ${PROXY_LOGGER_3}
+      PORT_CONSUL: ${PORT_CONSUL}
+    ports:
+      - "${PORT_LOGGIN_MACHINE_3}:${PORT_LOGGIN_MACHINE_3}"
+    networks:
+      - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
+      - consul-service
+
+  api-facade:
+    build:
+      context: .
+      dockerfile: facade.Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT_SEVICE: ${PORT_FACADE_MACHINE}
+      PORT_CONSUL: ${PORT_CONSUL}
+      PROXY_SERVICE: ${PROXY_FACADE}
+    ports:
+      - "${PORT_FACADE_MACHINE}:${PORT_FACADE_MACHINE}"
+    networks:
+      - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
+      - consul-service
+
+  api-message-1:
+    build:
+      context: .
+      dockerfile: message.Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT_SEVICE: ${PORT_MESSAGE_MACHINE_1}
+      PROXY_SERVICE: ${PROXY_MESSAGE_1}
+      PORT_CONSUL: ${PORT_CONSUL}
+    ports:
+      - "${PORT_MESSAGE_MACHINE_1}:${PORT_MESSAGE_MACHINE_1}"
+    networks:
+      - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
+      - consul-service
+
+  api-message-2:
+    build:
+      context: .
+      dockerfile: message.Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT_SEVICE: ${PORT_MESSAGE_MACHINE_2}
+      PROXY_SERVICE: ${PROXY_MESSAGE_2}
+      PORT_CONSUL: ${PORT_CONSUL}
+    ports:
+      - "${PORT_MESSAGE_MACHINE_2}:${PORT_MESSAGE_MACHINE_2}"
+    networks:
+      - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
+      - consul-service
+
+  hazelcast-management-center:
+    image: hazelcast/management-center:latest
+    restart: unless-stopped
+    environment:
+      - HZ_MAN_CENTER_CLUSTER_MEMBERS=hazelcast-node-1:5701,hazelcast-node-2:5701,hazelcast-node-3:5701
+    ports:
+      - "8080:8080"
+    networks:
+      - hazelcast-lecture
+    depends_on:
+      - hazelcast-node-1
+      - hazelcast-node-2
+      - hazelcast-node-3
+      - consul-service
+
+  consul-service:
+    image: consul
+    ports:
+      - "8500:8500"
+    networks:
+      - hazelcast-lecture
+
+networks:
+  hazelcast-lecture:
+    driver: bridge
