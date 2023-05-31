@@ -4,25 +4,27 @@ import uuid
 from ports_logger import FabricService
 from base_client import QuieneHz
 from consul import Consul, Check
+from os import environ
 
 
 app = FastAPI()
 
 @app.on_event("startup")
 async def register_service():
-    consul = Consul(host="consul-service", port=8500)  # Подставьте правильные значения хоста и порта Consul
-    service_id = "api-facade"  # Уникальный идентификатор вашего сервиса
-    service_name = "api-facade"  # Имя вашего сервиса
-    service_port = 8015  # Порт, на котором работает ваш сервис
+    consul = Consul(host="consul-service", port=int(environ.get("PORT_CONSUL"))) 
+    service_id = environ.get('PROXY_SERVICE') 
+    service_name = environ.get('PROXY_SERVICE')
+    service_port = int(environ.get('PORT_SEVICE'))
 
-    check = Check.http(f"http://api-facade:{service_port}/", interval="10s")  # Путь к эндпоинту проверки состояния вашего сервиса
+    check = Check.http(f"http://api-facade:{environ.get('PORT_SEVICE')}/check/counsul/", interval="10s")  
 
     consul.agent.service.register(
         name=service_name,
         service_id=service_id,
-        address="api-facade",  # Имя сервиса, указанное в Docker Compose
+        address=environ.get('PROXY_SERVICE'),  # Имя сервиса, указанное в Docker Compose
         port=service_port,
-        check=check
+        check=check,
+        timeout="30s"
     )
 
 QuieneHz(
@@ -66,3 +68,9 @@ async def save_message(data: GetMessage):
     )
     await QuieneHz().send_data(data.message)
     return {"Response": data.message}
+
+
+@app.get("/check/counsul/")
+async def plus_strings():
+    return {"Response": "OK"}
+
