@@ -3,10 +3,27 @@ from modal_body import GetMessage
 import uuid
 from ports_logger import FabricService
 from base_client import QuieneHz
+from consul import Consul
 
 
 app = FastAPI()
 
+# @app.on_event("startup")
+# async def register_service():
+#     consul = Consul(host="consul-service", port=8500)  # Подставьте правильные значения хоста и порта Consul
+#     service_id = "api-facade"  # Уникальный идентификатор вашего сервиса
+#     service_name = "api-facade"  # Имя вашего сервиса
+#     service_port = 8015  # Порт, на котором работает ваш сервис
+
+#     check = Consul.Check.http(f"http://api-facade:{service_port}/")  # Путь к эндпоинту проверки состояния вашего сервиса
+
+#     consul.agent.service.register(
+#         name=service_name,
+#         service_id=service_id,
+#         address="api-facade",  # Имя сервиса, указанное в Docker Compose
+#         port=service_port,
+#         check=check
+#     )
 
 QuieneHz(
     list_nodes=[
@@ -49,6 +66,3 @@ async def save_message(data: GetMessage):
     )
     await QuieneHz().send_data(data.message)
     return {"Response": data.message}
-
-
-
