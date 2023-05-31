@@ -3,4 +3,6 @@
 # pull official base image
 FROM python:3.11.1-alpine
 
-ENTRYPOINT ["./register_node.sh"]
+ENTRYPOINT ["./opt/hazelcast/register_node.sh"]
+
+CMD ["hz start"]
