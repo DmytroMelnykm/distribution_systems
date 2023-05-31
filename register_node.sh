@@ -14,3 +14,5 @@ SERVICE_DATA='{
 
 # Выполнение запроса на регистрацию сервиса
 curl -X PUT -d "$SERVICE_DATA" http://consul-service:8500/v1/agent/service/register
+
+hz start
